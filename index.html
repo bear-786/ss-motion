@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ระบบเสนอญัตติ สมาชิกสภาผู้แทนราษฎร</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-dark:   #0a1628;
+      --blue-mid:    #1a3a6b;
+      --blue:        #1e5bb5;
+      --gold:        #c9a227;
+      --gold-light:  #f0c94a;
+      --white:       #ffffff;
+      --text-main:   #1a2340;
+      --text-sub:    #4a5678;
+      --border:      rgba(201,162,39,0.35);
+      --card-bg:     rgba(255,255,255,0.92);
+      --shadow:      0 8px 32px rgba(10,22,40,0.18);
+      --radius:      16px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Sarabun', sans-serif;
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 55%, #0e2a5c 100%);
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+
+    /* ─── Header ─── */
+    header {
+      background: linear-gradient(90deg, #0a1628 0%, #1a3a6b 60%, #0a1628 100%);
+      border-bottom: 3px solid var(--gold);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .emblem {
+      width: 64px;
+      height: 64px;
+      background: radial-gradient(circle, var(--gold-light) 30%, var(--gold) 70%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+      box-shadow: 0 0 18px rgba(201,162,39,0.5);
+    }
+
+    .header-text h1 {
+      color: var(--gold-light);
+      font-size: clamp(1.1rem, 3vw, 1.55rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      line-height: 1.25;
+    }
+
+    .header-text p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+
+    /* ─── Main Layout ─── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 36px 20px 60px;
+    }
+
+    /* ─── Info Banner ─── */
+    .info-banner {
+      background: rgba(201,162,39,0.12);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 28px;
+      color: var(--gold-light);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .info-banner .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+
+    /* ─── Motion List Section ─── */
+    .section-title {
+      color: var(--gold-light);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── Card ─── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(201,162,39,0.2);
+      overflow: hidden;
+    }
+
+    /* ─── Form ─── */
+    .form-card {
+      padding: 32px 36px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 600px) {
+      .form-card { padding: 22px 18px; }
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      letter-spacing: 0.02em;
+    }
+
+    label .required { color: #c0392b; margin-left: 2px; }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #d0d8e8;
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      background: #f7f9fc;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(30,91,181,0.12);
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 130px;
+      line-height: 1.6;
+    }
+
+    .char-counter {
+      font-size: 0.78rem;
+      color: #8a99b3;
+      text-align: right;
+      margin-top: -2px;
+    }
+
+    /* ─── Submit Button ─── */
+    .btn-submit {
+      margin-top: 24px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--blue) 0%, #0f3d8a 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 18px rgba(30,91,181,0.3);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      opacity: 0.92;
+      box-shadow: 0 6px 24px rgba(30,91,181,0.45);
+    }
+
+    .btn-submit:active:not(:disabled) { transform: scale(0.985); }
+
+    .btn-submit:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* ─── Toast / Alert ─── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: #1a3a6b;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--gold);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 9999;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #1a6b3a; }
+    #toast.error   { background: #7a1a1a; }
+
+    /* ─── Motion List ─── */
+    #motionList { list-style: none; }
+
+    .motion-item {
+      border-bottom: 1px solid #e8edf5;
+      padding: 18px 24px;
+      transition: background 0.15s;
+    }
+
+    .motion-item:last-child { border-bottom: none; }
+    .motion-item:hover { background: #f5f8ff; }
+
+    .motion-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .motion-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--blue-mid);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .badge-general   { background: #e8f0fe; color: #1e5bb5; }
+    .badge-budget    { background: #fef8e8; color: #a07c10; }
+    .badge-security  { background: #fde8e8; color: #9b2929; }
+    .badge-foreign   { background: #e8fef2; color: #1a6b45; }
+    .badge-other     { background: #f0e8fe; color: #5a2fa0; }
+
+    .motion-meta {
+      margin-top: 6px;
+      font-size: 0.83rem;
+      color: var(--text-sub);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .motion-meta span { display: flex; align-items: center; gap: 4px; }
+
+    .motion-body {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #3a4a68;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .motion-body.collapsed {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .btn-expand {
+      margin-top: 6px;
+      background: none;
+      border: none;
+      color: var(--blue);
+      font-size: 0.83rem;
+      cursor: pointer;
+      font-family: 'Sarabun', sans-serif;
+      padding: 0;
+      text-decoration: underline;
+    }
+
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+      color: #8a99b3;
+      font-size: 0.95rem;
+    }
+
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+
+    /* ─── Spinner ─── */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Dialog (Confirm) ─── */
+    dialog {
+      border: none;
+      border-radius: var(--radius);
+      padding: 0;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+      max-width: 420px;
+      width: 90vw;
+    }
+
+    dialog::backdrop { background: rgba(10,22,40,0.65); }
+
+    .dialog-inner {
+      padding: 28px 32px;
+    }
+
+    .dialog-inner h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .dialog-inner p {
+      font-size: 0.93rem;
+      color: var(--text-sub);
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .dialog-preview {
+      background: #f5f8ff;
+      border: 1px solid #d0daf0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 22px;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .dialog-preview strong { color: var(--blue-mid); }
+
+    .dialog-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn-cancel {
+      padding: 10px 22px;
+      border-radius: 10px;
+      border: 1.5px solid #d0d8e8;
+      background: #fff;
+      color: var(--text-sub);
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-cancel:hover { background: #f0f4fc; }
+
+    .btn-confirm {
+      padding: 10px 22px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--blue), #0f3d8a);
+      color: #fff;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn-confirm:hover { opacity: 0.88; }
+
+    /* ─── Footer ─── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(201,162,39,0.15);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header>
+  <div class="emblem" aria-hidden="true">⚖️</div>
+  <div class="header-text">
+    <h1>ระบบเสนอญัตติ</h1>
+    <p>สมาชิกสภาผู้แทนราษฎร (สส.) — รัฐสภาแห่งราชอาณาจักรไทย</p>
+  </div>
+</header>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<main>
+
+  <!-- Info -->
+  <div class="info-banner" role="note">
+    <span class="icon">ℹ️</span>
+    <span>ญัตติที่เสนอจะถูกส่งแจ้งเตือนไปยังช่องทาง Discord ทันที และปรากฎในรายการด้านล่าง ทุกคนสามารถเสนอได้โดยระบุชื่อ-นามสกุลและพรรคการเมือง</span>
+  </div>
+
+  <!-- ─── FORM ─── -->
+  <p class="section-title">📝 เสนอญัตติใหม่</p>
+
+  <div class="card form-card">
+    <form id="motionForm" novalidate>
+      <div class="form-grid">
+
+        <div class="field">
+          <label for="propName">ชื่อ-นามสกุล ผู้เสนอ <span class="required">*</span></label>
+          <input type="text" id="propName" name="propName"
+                 placeholder="เช่น นายสมชาย ใจดี"
+                 autocomplete="name" required maxlength="100" />
+        </div>
+
+        <div class="field">
+          <label for="propParty">พรรคการเมือง <span class="required">*</span></label>
+          <input type="text" id="propParty" name="propParty"
+                 placeholder="เช่น พรรคประชาธิปไตย"
+                 required maxlength="100" />
+        </div>
+
+        <div class="field">
+          <label for="motionCategory">ประเภทญัตติ <span class="required">*</span></label>
+          <select id="motionCategory" name="motionCategory" required>
+            <option value="">— เลือกประเภท —</option>
+            <option value="general">ญัตติทั่วไป</option>
+            <option value="budget">ญัตติงบประมาณ</option>
+            <option value="security">ญัตติความมั่นคง</option>
+            <option value="foreign">ญัตติต่างประเทศ</option>
+            <option value="other">ญัตติอื่นๆ</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="motionDate">วันที่เสนอ <span class="required">*</span></label>
+          <input type="date" id="motionDate" name="motionDate" required />
+        </div>
+
+        <div class="field full">
+          <label for="motionTitle">ชื่อญัตติ <span class="required">*</span></label>
+          <input type="text" id="motionTitle" name="motionTitle"
+                 placeholder="ระบุชื่อญัตติโดยย่อ"
+                 required maxlength="200" />
+        </div>
+
+        <div class="field full">
+          <label for="motionDetail">รายละเอียดญัตติ <span class="required">*</span></label>
+          <textarea id="motionDetail" name="motionDetail"
+                    placeholder="อธิบายเนื้อหาและเหตุผลของญัตติ..."
+                    required maxlength="2000"></textarea>
+          <div class="char-counter"><span id="charCount">0</span> / 2,000 ตัวอักษร</div>
+        </div>
+
+      </div><!-- /form-grid -->
+
+      <button type="submit" class="btn-submit" id="btnSubmit">
+        <span>📨 ส่งญัตติ</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- ─── LIST ─── -->
+  <p class="section-title">📋 รายการญัตติที่เสนอแล้ว</p>
+
+  <div class="card">
+    <ul id="motionList">
+      <li class="empty-state">
+        <span class="icon">🗒️</span>
+        ยังไม่มีญัตติที่เสนอ
+      </li>
+    </ul>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════ CONFIRM DIALOG ═══════════════════════ -->
+<dialog id="confirmDialog" aria-labelledby="dlgTitle" aria-describedby="dlgDesc">
+  <div class="dialog-inner">
+    <h3 id="dlgTitle">ยืนยันการเสนอญัตติ</h3>
+    <p id="dlgDesc">กรุณาตรวจสอบข้อมูลก่อนส่ง ญัตติที่ส่งแล้วจะแจ้งเตือนทาง Discord ทันที</p>
+    <div class="dialog-preview" id="dlgPreview"></div>
+    <div class="dialog-actions">
+      <button class="btn-cancel" id="dlgCancel">ยกเลิก</button>
+      <button class="btn-confirm" id="dlgConfirm">✅ ยืนยันส่งญัตติ</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ═══════════════════════ TOAST ═══════════════════════ -->
+<div id="toast" role="alert" aria-live="assertive"></div>
+
+<!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+<footer>
+  ระบบเสนอญัตติออนไลน์ • รัฐสภาแห่งราชอาณาจักรไทย
+</footer>
+
+<!-- ═══════════════════════ SCRIPT ═══════════════════════ -->
+<script type="module">
+  /* ──────────────────────────────────────────────
+     CONFIG — ใส่ Discord Webhook URL ของคุณที่นี่
+  ────────────────────────────────────────────── */
+  const DISCORD_WEBHOOK_URL = "YOUR_DISCORD_WEBHOOK_URL_HERE";
+
+  /* ──────────────────────────────────────────────
+     Category helpers
+  ────────────────────────────────────────────── */
+  const CAT_LABEL = {
+    general:  "ญัตติทั่วไป",
+    budget:   "ญัตติงบประมาณ",
+    security: "ญัตติความมั่นคง",
+    foreign:  "ญัตติต่างประเทศ",
+    other:    "ญัตติอื่นๆ",
+  };
+
+  const CAT_BADGE = {
+    general:  "badge-general",
+    budget:   "badge-budget",
+    security: "badge-security",
+    foreign:  "badge-foreign",
+    other:    "badge-other",
+  };
+
+  const CAT_EMOJI = {
+    general:  "📋",
+    budget:   "💰",
+    security: "🛡️",
+    foreign:  "🌏",
+    other:    "📌",
+  };
+
+  /* ──────────────────────────────────────────────
+     State
+  ────────────────────────────────────────────── */
+  const STORAGE_KEY = "ss_motions_v1";
+  let motions = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  let pendingData = null;
+
+  /* ──────────────────────────────────────────────
+     DOM refs
+  ────────────────────────────────────────────── */
+  const form         = document.getElementById("motionForm");
+  const btnSubmit    = document.getElementById("btnSubmit");
+  const motionList   = document.getElementById("motionList");
+  const toast        = document.getElementById("toast");
+  const dialog       = document.getElementById("confirmDialog");
+  const dlgPreview   = document.getElementById("dlgPreview");
+  const dlgCancel    = document.getElementById("dlgCancel");
+  const dlgConfirm   = document.getElementById("dlgConfirm");
+  const charCount    = document.getElementById("charCount");
+  const detailArea   = document.getElementById("motionDetail");
+
+  /* ──────────────────────────────────────────────
+     Set today's date as default
+  ────────────────────────────────────────────── */
+  const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+  document.getElementById("motionDate").value = today;
+
+  /* ──────────────────────────────────────────────
+     Char counter
+  ────────────────────────────────────────────── */
+  detailArea.addEventListener("input", () => {
+    charCount.textContent = detailArea.value.length.toLocaleString("th-TH");
+  });
+
+  /* ──────────────────────────────────────────────
+     Render list
+  ────────────────────────────────────────────── */
+  function renderList() {
+    if (motions.length === 0) {
+      motionList.innerHTML = `
+        <li class="empty-state">
+          <span class="icon">🗒️</span>
+          ยังไม่มีญัตติที่เสนอ
+        </li>`;
+      return;
+    }
+
+    motionList.innerHTML = [...motions].reverse().map((m, idx) => {
+      const realIdx = motions.length - 1 - idx;
+      const badgeClass = CAT_BADGE[m.category] || "badge-other";
+      const catLabel   = CAT_LABEL[m.category]  || "อื่นๆ";
+      const dateStr    = new Date(m.date + "T00:00:00").toLocaleDateString("th-TH", {
+        year: "numeric", month: "long", day: "numeric"
+      });
+      return `
+        <li class="motion-item">
+          <div class="motion-header">
+            <div class="motion-title">${escHtml(m.title)}</div>
+            <span class="badge ${badgeClass}">${catLabel}</span>
+          </div>
+          <div class="motion-meta">
+            <span>👤 ${escHtml(m.proposerName)}</span>
+            <span>🏛️ ${escHtml(m.party)}</span>
+            <span>📅 ${dateStr}</span>
+          </div>
+          <div class="motion-body collapsed" id="body-${realIdx}">${escHtml(m.detail)}</div>
+          <button class="btn-expand" data-idx="${realIdx}" aria-expanded="false">
+            แสดงเพิ่มเติม ▾
+          </button>
+        </li>`;
+    }).join("");
+  }
+
+  /* ──────────────────────────────────────────────
+     Expand / collapse detail
+  ────────────────────────────────────────────── */
+  motionList.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-expand");
+    if (!btn) return;
+    const idx     = btn.dataset.idx;
+    const bodyEl  = document.getElementById(`body-${idx}`);
+    const isOpen  = btn.getAttribute("aria-expanded") === "true";
+    bodyEl.classList.toggle("collapsed", isOpen);
+    btn.setAttribute("aria-expanded", !isOpen);
+    btn.textContent = isOpen ? "แสดงเพิ่มเติม ▾" : "ย่อ ▴";
+  });
+
+  /* ──────────────────────────────────────────────
+     Form submit → show confirm dialog
+  ────────────────────────────────────────────── */
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.querySelectorAll(":invalid")[0]?.focus();
+      showToast("⚠️ กรุณากรอกข้อมูลให้ครบถ้วน", "error");
+      return;
+    }
+
+    pendingData = {
+      proposerName: form.propName.value.trim(),
+      party:        form.propParty.value.trim(),
+      category:     form.motionCategory.value,
+      date:         form.motionDate.value,
+      title:        form.motionTitle.value.trim(),
+      detail:       form.motionDetail.value.trim(),
+      submittedAt:  new Date().toISOString(),
+    };
+
+    const dateStr = new Date(pendingData.date + "T00:00:00").toLocaleDateString("th-TH", {
+      year: "numeric", month: "long", day: "numeric"
+    });
+
+    dlgPreview.innerHTML = `
+      <strong>ชื่อญัตติ:</strong> ${escHtml(pendingData.title)}<br>
+      <strong>ประเภท:</strong> ${CAT_LABEL[pendingData.category]}<br>
+      <strong>ผู้เสนอ:</strong> ${escHtml(pendingData.proposerName)} — ${escHtml(pendingData.party)}<br>
+      <strong>วันที่:</strong> ${dateStr}
+    `;
+
+    dialog.showModal();
+  });
+
+  dlgCancel.addEventListener("click", () => {
+    dialog.close();
+    pendingData = null;
+  });
+
+  /* Close on backdrop click */
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) { dialog.close(); pendingData = null; }
+  });
+
+  /* ──────────────────────────────────────────────
+     Confirm → send to Discord + save
+  ────────────────────────────────────────────── */
+  dlgConfirm.addEventListener("click", async () => {
+    dialog.close();
+    if (!pendingData) return;
+
+    setSubmitting(true);
+
+    const data = { ...pendingData };
+
+    /* Save locally first */
+    motions.push(data);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(motions));
+    renderList();
+
+    /* Send to Discord */
+    const sent = await sendToDiscord(data);
+
+    setSubmitting(false);
+
+    if (sent) {
+      showToast("✅ เสนอญัตติสำเร็จ และแจ้งเตือน Discord แล้ว!", "success");
+    } else {
+      showToast("✅ บันทึกญัตติแล้ว (แจ้งเตือน Discord ไม่สำเร็จ)", "error");
+    }
+
+    form.reset();
+    document.getElementById("motionDate").value = today;
+    charCount.textContent = "0";
+    pendingData = null;
+  });
+
+  /* ──────────────────────────────────────────────
+     Discord Webhook
+  ────────────────────────────────────────────── */
+  async function sendToDiscord(data) {
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "YOUR_DISCORD_WEBHOOK_URL_HERE") {
+      console.warn("⚠️ Discord Webhook URL ยังไม่ได้ตั้งค่า");
+      return false;
+    }
+
+    const dateStr = new Date(data.date + "T00:00:00").toLocaleDateString("th-TH", {
+      year: "numeric", month: "long", day: "numeric"
+    });
+
+    const catEmoji = CAT_EMOJI[data.category] || "📌";
+    const catLabel = CAT_LABEL[data.category]  || "อื่นๆ";
+
+    const submittedTime = new Date(data.submittedAt).toLocaleString("th-TH", {
+      year: "numeric", month: "short", day: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+
+    const payload = {
+      username: "ระบบญัตติ สส.",
+      avatar_url: "https://cdn-icons-png.flaticon.com/512/3094/3094918.png",
+      embeds: [
+        {
+          title: `${catEmoji} ญัตติใหม่: ${data.title}`,
+          color: 0x1e5bb5,
+          fields: [
+            {
+              name: "👤 ผู้เสนอ",
+              value: `${data.proposerName}`,
+              inline: true,
+            },
+            {
+              name: "🏛️ พรรค",
+              value: `${data.party}`,
+              inline: true,
+            },
+            {
+              name: "📋 ประเภท",
+              value: catLabel,
+              inline: true,
+            },
+            {
+              name: "📅 วันที่เสนอ",
+              value: dateStr,
+              inline: true,
+            },
+            {
+              name: "📝 รายละเอียด",
+              value: data.detail.length > 1024
+                ? data.detail.slice(0, 1020) + "…"
+                : data.detail,
+              inline: false,
+            },
+          ],
+          footer: { text: `เสนอเมื่อ ${submittedTime} · ระบบเสนอญัตติออนไลน์` },
+          timestamp: data.submittedAt,
+        },
+      ],
+    };
+
+    try {
+      const res = await fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("Discord webhook error:", err);
+      return false;
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     Helpers
+  ────────────────────────────────────────────── */
+  function escHtml(str) {
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+              .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  }
+
+  let toastTimer;
+  function showToast(msg, type = "") {
+    toast.textContent = msg;
+    toast.className   = "show " + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.className = ""; }, 4000);
+  }
+
+  function setSubmitting(state) {
+    if (state) {
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<div class="spinner"></div><span>กำลังส่ง…</span>`;
+    } else {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = `<span>📨 ส่งญัตติ</span>`;
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     Init
+  ────────────────────────────────────────────── */
+  renderList();
+</script>
+
+</body>
+</html>
